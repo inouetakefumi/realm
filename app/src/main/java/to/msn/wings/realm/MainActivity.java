@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import java.util.Date;
 
@@ -56,8 +57,72 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        read.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRealm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<schedule> schedules
+                                = realm.where(schedule.class).findAll();
 
-        
+                        mTextView.setText("取得");
+                        for (schedule schedule :
+                                schedules) {
+                            String text = mTextView.getText() + "\n"
+                                    + schedule.toString();
+                            mTextView.setText(text);
+                        }
+                    }
+                });
+            }
+        });
+
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRealm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        schedule schedule = realm.where(schedule.class)
+                                .equalTo("id", 0)
+                                .findFirst();
+                        schedule.title += "＜更新＞";
+                        schedule.detail += "＜更新＞";
+
+                        mTextView.setText("更新しました\n"
+                                + schedule.toString());
+
+                    }
+                });
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRealm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        Number min = realm.where(schedule.class).min("id");
+                        if (min != null) { // nullチェック
+
+                            schedule schedule = realm.where(schedule.class)
+                                    .equalTo("id", min.longValue())
+                                    .findFirst();
+
+                            schedule.deleteFromRealm();
+
+                            mTextView.setText("削除しました\n"
+                                    + schedule.toString());
+                        }
+                    }
+                });
+            }
+        });
+
+
+
     }
 
 

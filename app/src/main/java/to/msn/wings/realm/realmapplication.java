@@ -9,5 +9,6 @@ public class realmapplication extends Application {
         super.onCreate();
 
         Realm.init(this);
+
     }
 }

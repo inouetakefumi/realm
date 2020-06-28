@@ -9,6 +9,6 @@ public class schedule extends RealmObject {
     @PrimaryKey
     public long id;     // 予定を見分けるためのIDが必要
     public Date date;   //予定の日付
-    public String title;    // 予定のタイトル
+    public String work;    // 勤怠
     public String detail;   // 予定の詳細
 }

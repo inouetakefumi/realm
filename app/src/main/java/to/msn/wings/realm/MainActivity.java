@@ -9,13 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    Realm mRealm;
     private TextView mTextView;
 
     @Override
@@ -23,7 +23,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRealm = Realm.getDefaultInstance();
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("schedule.realm")
+                .schemaVersion(1)
+                .build();
+        
+        Realm mRealm = Realm.getDefaultInstance(config);
 
         mTextView = (TextView) findViewById(R.id.textView);
         Button create = (Button) findViewById(R.id.create);
@@ -46,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
                         schedule schedule
                                 = realm.createObject(schedule.class, newId);
                         schedule.date = new Date();
-                        schedule.title = "登録テスト";
-                        schedule.detail = "スケジュールの詳細情報です";
+                        schedule.work = "テレワーク";
+                        schedule.detail = "１０時打ち合わせ";
 
                         // 保存するスケジュールをTextViewに表示します。
                         mTextView.setText("登録しました\n"
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         schedule schedule = realm.where(schedule.class)
                                 .equalTo("id", 0)
                                 .findFirst();
-                        schedule.title += "＜更新＞";
+                        schedule.work += "＜更新＞";
                         schedule.detail += "＜更新＞";
 
                         mTextView.setText("更新しました\n"

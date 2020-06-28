@@ -13,6 +13,7 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 import java.util.Date;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +31,38 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mRealm = Realm.getInstance(config);
+
+        //データを10日初期登録
+        try {
+	    for(int i = 0;i<10;i++){
+
+            mRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    Number max = realm.where(schedule.class).max("id");
+                    long newId = 0;
+                    if(max != null) { // nullチェック
+                        newId = max.longValue() + 1;
+                    }
+                    schedule schedule
+                            = realm.createObject(schedule.class, newId);
+
+                    Calendar c = Calendar.getInstance();
+
+                    //当日日付を取得
+                    int year = c.get(Calendar.YEAR);
+                    int month = c.get(Calendar.MONTH);
+                    int day= c.get(Calendar.DATE);
+
+                    c.set(year, month , day+i);
+                    schedule.date = c.get(Calendar.YEAR) + "/" + (c.get(Calendar.MONTH) + 1)+ "/" + c.get(Calendar.DATE);
+                }
+            });
+        }
+        }
+        catch (IllegalArgumentException e) {
+            // 不正な日付の場合の処理
+        }
 
         mTextView = (TextView) findViewById(R.id.textView);
         Button create = (Button) findViewById(R.id.create);
@@ -51,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
                         schedule schedule
                                 = realm.createObject(schedule.class, newId);
-                        schedule.date = new Date();
+
                         schedule.work = "テレワーク";
                         schedule.detail = "１０時打ち合わせ";
 

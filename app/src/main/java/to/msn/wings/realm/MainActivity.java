@@ -17,6 +17,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextView;
+    private Realm mRealm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
                 .name("schedule.realm")
                 .schemaVersion(1)
                 .build();
-        
-        Realm mRealm = Realm.getDefaultInstance(config);
+
+        mRealm = Realm.getInstance(config);
 
         mTextView = (TextView) findViewById(R.id.textView);
         Button create = (Button) findViewById(R.id.create);

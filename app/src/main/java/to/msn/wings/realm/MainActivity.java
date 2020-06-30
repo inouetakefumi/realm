@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
                 .schemaVersion(4)
                 .build();
 
+        mRealm.deleteRealm(config);
+
         mRealm = Realm.getInstance(config);
 
         //データを10日初期登録
@@ -147,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRealm.close();
     }
+
     class RealmInitTransaction implements Realm.Transaction {
         int i =0;
         RealmInitTransaction(int i){
@@ -168,10 +171,12 @@ public class MainActivity extends AppCompatActivity {
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day= c.get(Calendar.DATE);
-
+            //日付を
             c.set(year, month , day+i);
             Date d = c.getTime();
             schedule.date = d;
+            schedule.name = "井上武史";
+
         }
     }
 

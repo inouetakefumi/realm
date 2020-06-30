@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("schedule.realm")
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .build();
 
         mRealm = Realm.getInstance(config);
@@ -35,39 +35,12 @@ public class MainActivity extends AppCompatActivity {
         //データを10日初期登録
         try {
             for(int i = 0;i<10;i++){
-                mRealm.executeTransaction(new RealmInitTransaction(i) {
-                });
+                mRealm.executeTransaction(new RealmInitTransaction(i));
             }
         }
         catch (IllegalArgumentException e) {
             // 不正な日付の場合の処理
         }
-
-            class RealmInitTransaction implements Realm.Transaction {
-                int i =0;
-                RealmInitTransaction(int i){
-                    this.i = i;
-                }
-                public void execute(Realm realm) {
-                    Number max = realm.where(schedule.class).max("id");
-                    long newId = 0;
-                    if(max != null) { // nullチェック
-                        newId = max.longValue() + 1;
-                    }
-                    schedule schedule
-                            = realm.createObject(schedule.class, newId);
-
-                    Calendar c = Calendar.getInstance();
-
-                    //当日日付を取得
-                    int year = c.get(Calendar.YEAR);
-                    int month = c.get(Calendar.MONTH);
-                    int day= c.get(Calendar.DATE);
-
-                    c.set(year, month , day+i);
-                    schedule.date = c.get(Calendar.YEAR) + "/" + (c.get(Calendar.MONTH) + 1)+ "/" + c.get(Calendar.DATE);
-                }
-            }
 
 
         mTextView = (TextView) findViewById(R.id.textView);
@@ -165,9 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
-
-
     }
 
 
@@ -176,5 +146,32 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         mRealm.close();
+    }
+
+    class RealmInitTransaction implements Realm.Transaction {
+        int i =0;
+        RealmInitTransaction(int i){
+            this.i = i;
+        }
+        @Override
+        public void execute(Realm realm) {
+            Number max = realm.where(schedule.class).max("id");
+            long newId = 0;
+            if(max != null) { // nullチェック
+                newId = max.longValue() + 1;
+            }
+            schedule schedule
+                    = realm.createObject(schedule.class, newId);
+
+            Calendar c = Calendar.getInstance();
+
+            //当日日付を取得
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day= c.get(Calendar.DATE);
+
+            c.set(year, month , day+i);
+            schedule.date = c.get(Calendar.YEAR) + "/" + (c.get(Calendar.MONTH) + 1)+ "/" + c.get(Calendar.DATE);
+        }
     }
 }

@@ -34,10 +34,20 @@ public class MainActivity extends AppCompatActivity {
 
         //データを10日初期登録
         try {
-	    for(int i = 0;i<10;i++){
+            for(int i = 0;i<10;i++){
+                mRealm.executeTransaction(new RealmInitTransaction(i) {
+                });
+            }
+        }
+        catch (IllegalArgumentException e) {
+            // 不正な日付の場合の処理
+        }
 
-            mRealm.executeTransaction(new Realm.Transaction() {
-                @Override
+            class RealmInitTransaction implements Realm.Transaction {
+                int i =0;
+                RealmInitTransaction(int i){
+                    this.i = i;
+                }
                 public void execute(Realm realm) {
                     Number max = realm.where(schedule.class).max("id");
                     long newId = 0;
@@ -57,12 +67,8 @@ public class MainActivity extends AppCompatActivity {
                     c.set(year, month , day+i);
                     schedule.date = c.get(Calendar.YEAR) + "/" + (c.get(Calendar.MONTH) + 1)+ "/" + c.get(Calendar.DATE);
                 }
-            });
-        }
-        }
-        catch (IllegalArgumentException e) {
-            // 不正な日付の場合の処理
-        }
+            }
+
 
         mTextView = (TextView) findViewById(R.id.textView);
         Button create = (Button) findViewById(R.id.create);

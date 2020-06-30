@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("schedule.realm")
-                .schemaVersion(2)
+                .schemaVersion(4)
                 .build();
 
         mRealm = Realm.getInstance(config);
@@ -35,13 +35,13 @@ public class MainActivity extends AppCompatActivity {
         //データを10日初期登録
         try {
             for(int i = 0;i<10;i++){
-                mRealm.executeTransaction(new RealmInitTransaction(i));
+                mRealm.executeTransaction(new RealmInitTransaction(i) {
+                });
             }
         }
         catch (IllegalArgumentException e) {
             // 不正な日付の場合の処理
         }
-
 
         mTextView = (TextView) findViewById(R.id.textView);
         Button create = (Button) findViewById(R.id.create);
@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
 
         mRealm.close();
     }
-
     class RealmInitTransaction implements Realm.Transaction {
         int i =0;
         RealmInitTransaction(int i){
@@ -171,7 +170,10 @@ public class MainActivity extends AppCompatActivity {
             int day= c.get(Calendar.DATE);
 
             c.set(year, month , day+i);
-            schedule.date = c.get(Calendar.YEAR) + "/" + (c.get(Calendar.MONTH) + 1)+ "/" + c.get(Calendar.DATE);
+            Date d = c.getTime();
+            schedule.date = d;
         }
     }
+
+
 }
